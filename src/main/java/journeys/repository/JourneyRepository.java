@@ -11,11 +11,10 @@ import java.util.List;
 @Repository
 public interface JourneyRepository extends MongoRepository<Journey, ObjectId> {
 
-        List<Journey> findByDepartureStationName(String departureStationName);
+    Journey findById(String id);
 
-        @Query(value = "{}", fields = "{ departureTime : 0, returnTime : 0, departureStationId : 0, returnStationId : 0 }" )
-        List<Journey> findAllJourneys();
+    @Query(value = "{}", fields = "{ departureTime : 0, returnTime : 0, departureStationId : 0, returnStationId : 0 }")
+    List<Journey> findAllJourneys();
 
-        Journey findById(String id);
-
+    List<Journey> findByDepartureStationName(String departureStationName);
 }
