@@ -26,25 +26,9 @@ class JourneyServiceTest {
 
 
     @Test
-    void getAllJourneys() {
+    void itFetchesAllJourneys() {
 
-        List<Journey> journeys;
-        journeys = Arrays.asList(
-                Journey.builder()
-                .id("1234")
-                .departureStationName("DepartStation")
-                .returnStationName("ReturnStation")
-                .distance(1000)
-                .duration(90)
-                .build(),
-                Journey.builder()
-                        .id("5678")
-                        .departureStationName("Manchester")
-                        .returnStationName("Helsinki")
-                        .distance(2000)
-                        .duration(120)
-                        .build()
-        );
+        List<Journey> journeys = createJourneys();
 
         when(journeyRepository.findAllJourneys()).thenReturn(journeys);
 
@@ -53,24 +37,8 @@ class JourneyServiceTest {
     }
 
     @Test
-    void findJourneysByDepartureStation() {
-        List<Journey> journeys;
-        journeys = Arrays.asList(
-                Journey.builder()
-                        .id("1234")
-                        .departureStationName("DepartStation")
-                        .returnStationName("ReturnStation")
-                        .distance(1000)
-                        .duration(90)
-                        .build(),
-                Journey.builder()
-                        .id("5678")
-                        .departureStationName("Manchester")
-                        .returnStationName("Helsinki")
-                        .distance(2000)
-                        .duration(120)
-                        .build()
-        );
+    void itFetchesAllJourneysByDepartureStationName() {
+        List<Journey> journeys = createJourneys();
 
         when(journeyRepository.findByDepartureStationName("Manchester"))
                 .thenReturn(Collections.singletonList(journeys.get(1)));
@@ -78,9 +46,27 @@ class JourneyServiceTest {
         List<Journey> actualJourneys = journeyService.getJourneysByDepartureStation("Manchester");
         assertThat(actualJourneys).hasSize(1);
     }
+    @Test
+    void itDoesntReturnNonExistingStation() {
+        List<Journey> journeys = createJourneys();
+
+        when(journeyRepository.findByDepartureStationName("London"))
+                .thenReturn(Collections.emptyList());
+
+        List<Journey> actualJourneys = journeyService.getJourneysByDepartureStation("London");
+        assertThat(actualJourneys).hasSize(0);
+    }
 
     @Test
-    void getById() {
+    void itFetchesJourneyById() {
+        List<Journey> journeys = createJourneys();
+
+        when(journeyRepository.findById("1234")).thenReturn(journeys.get(0));
+        Journey actualJourney = journeyService.getById("1234");
+        assertThat(actualJourney.getDepartureStationName()).isEqualTo("DepartStation");
+    }
+
+    private List<Journey> createJourneys() {
         List<Journey> journeys;
         journeys = Arrays.asList(
                 Journey.builder()
@@ -98,9 +84,6 @@ class JourneyServiceTest {
                         .duration(120)
                         .build()
         );
-
-        when(journeyRepository.findById("1234")).thenReturn(journeys.get(0));
-        Journey actualJourney = journeyService.getById("1234");
-        assertThat(actualJourney.getDepartureStationName()).isEqualTo("DepartStation");
+        return journeys;
     }
 }
