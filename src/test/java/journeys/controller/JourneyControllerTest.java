@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
@@ -52,7 +53,7 @@ public class JourneyControllerTest {
                         .build()
         );
 
-       when(journeyService.getAllJourneys()).thenReturn(journeys);
+       when(journeyService.getAllJourneys(0,10)).thenReturn((Page<Journey>) journeys);
        mockMvc.perform(get("/journeys/"))
                .andExpect(status().isOk())
                .andExpect(jsonPath("$", Matchers.hasSize(2)))
@@ -118,7 +119,6 @@ public class JourneyControllerTest {
         mockMvc.perform(get("/journeys/station/{departureStationName}", departureStationName)).andExpect(status().isOk())
                 .andExpect(jsonPath("$", Matchers.hasSize(1)))
                 .andDo(print());
-
     }
 
     @Test
@@ -128,9 +128,5 @@ public class JourneyControllerTest {
         mockMvc.perform(get("/journeys/London"))
                 .andExpect(status().isNotFound())
                 .andDo(print());
-
     }
-
-
-
 }

@@ -7,6 +7,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,9 +32,10 @@ class JourneyServiceTest {
 
         List<Journey> journeys = createJourneys();
 
-        when(journeyRepository.findAllJourneys()).thenReturn(journeys);
+        when(journeyRepository.findAllJourneys(Pageable.ofSize(10)))
+                .thenReturn((Page<Journey>) journeys);
 
-        List<Journey> actualJourneys = journeyService.getAllJourneys();
+        Page<Journey> actualJourneys = journeyService.getAllJourneys(0,10);
         assertThat(actualJourneys).hasSize(2);
     }
 
