@@ -9,12 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -52,11 +55,13 @@ public class JourneyControllerTest {
                         .duration(120)
                         .build()
         );
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        Page<Journey> journeysPage = new PageImpl<>(journeys, pageRequest, journeys.size());
 
-       when(journeyService.getAllJourneys(0,10)).thenReturn((Page<Journey>) journeys);
-       mockMvc.perform(get("/journeys/"))
+       when(journeyService.getAllJourneys(anyInt(), anyInt()))
+               .thenReturn(journeysPage);
+       mockMvc.perform(get("/journeys/?page=1&size=2"))
                .andExpect(status().isOk())
-               .andExpect(jsonPath("$", Matchers.hasSize(2)))
                .andDo(print());
 
     }

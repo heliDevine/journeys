@@ -8,7 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,11 +32,13 @@ class JourneyServiceTest {
     void itFetchesAllJourneys() {
 
         List<Journey> journeys = createJourneys();
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        Page<Journey> journeysPage = new PageImpl<>(journeys, pageRequest, journeys.size());
 
-        when(journeyRepository.findAllJourneys(Pageable.ofSize(10)))
-                .thenReturn((Page<Journey>) journeys);
+        when(journeyRepository.findAllJourneys(pageRequest))
+                .thenReturn(journeysPage);
 
-        Page<Journey> actualJourneys = journeyService.getAllJourneys(0,10);
+        Page<Journey> actualJourneys = journeyService.getAllJourneys(0,2);
         assertThat(actualJourneys).hasSize(2);
     }
 
