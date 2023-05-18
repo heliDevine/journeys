@@ -15,7 +15,7 @@ public interface JourneyRepository extends MongoRepository<Journey, ObjectId> {
 
     Journey findById(String id);
 
-    @Query(value = "{}", fields = "{ departureTime : 0, returnTime : 0, departureStationId : 0, returnStationId : 0 }")
+    @Query(value = "{}", fields = "{ returnTime : 0, departureStationId : 0, returnStationId : 0 }")
     Page<Journey> findAllJourneys(Pageable pageable);
 
     List<Journey> findByDepartureStationName(String departureStationName);
