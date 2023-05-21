@@ -28,8 +28,9 @@ public class StationService {
         return stationRepository.findByStationNameEN(stationNameEN);
     }
 
-    public Double totalJourneyDistanceTrial(int stationID) {
-
-       return journeyRepository.calculateTotalJourneyDistanceFromStation(stationID);
+    public Double totalJourneyDistanceTrial(Station station) {
+        int stationID = station.getStationID();
+       Double totalDistance = journeyRepository.calculateTotalJourneyDistanceFromStation(stationID);
+        return totalDistance != null ? totalDistance : 0.0;
     }
 }
