@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+
 public class StationService {
 
     @Autowired
@@ -21,7 +22,7 @@ public class StationService {
         return stationRepository.findById(id);
 
     }
-    public List<Station> getStationsByNameEN(String stationNameEN) {
+    public Station getStationsByNameEN(String stationNameEN) {
         return stationRepository.findByStationNameEN(stationNameEN);
     }
 }

@@ -37,7 +37,7 @@ public class StationController {
     @GetMapping(value = "/stationName/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Find all stations by name")
 
-    public ResponseEntity<List<Station>> getStationByName(@PathVariable String name) {
+    public ResponseEntity<Station> getStationByName(@PathVariable String name) {
         return new ResponseEntity<>(stationService.getStationsByNameEN(name), HttpStatus.OK
         );
     }

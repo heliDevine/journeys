@@ -12,7 +12,7 @@ public interface StationRepository extends MongoRepository<Station, ObjectId> {
 
     Station findById(String id);
 
-    List<Station> findByStationNameEN(String stationNameEN);
+    Station findByStationNameEN(String stationNameEN);
 
     List<Station> findAll();
 

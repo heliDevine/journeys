@@ -53,7 +53,7 @@ class JourneyServiceTest {
         assertThat(actualJourneys).hasSize(1);
     }
     @Test
-    void itDoesntReturnNonExistingStation() {
+    void itDoesntReturnJourneysIfStationDoesntExist() {
         List<Journey> journeys = createJourneys();
 
         when(journeyRepository.findByDepartureStationName("London"))
