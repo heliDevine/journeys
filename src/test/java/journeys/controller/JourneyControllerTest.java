@@ -121,7 +121,7 @@ public class JourneyControllerTest {
         );
 
         when(journeyService.getJourneysByDepartureStation("Firswood")).thenReturn(Collections.singletonList(journeys.get(0)));
-        mockMvc.perform(get("/journeys/station/{departureStationName}", departureStationName)).andExpect(status().isOk())
+        mockMvc.perform(get("/journeys/departureStation/{departureStationName}", departureStationName)).andExpect(status().isOk())
                 .andExpect(jsonPath("$", Matchers.hasSize(1)))
                 .andDo(print());
     }
