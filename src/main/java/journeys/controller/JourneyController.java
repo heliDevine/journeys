@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-
 @RestController
 @RequestMapping("/journeys")
 public class JourneyController {
@@ -21,8 +20,18 @@ public class JourneyController {
     @Autowired
     private JourneyService journeyService;
 
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(description = "Get a journey by ID")
+    @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "Find all journeys from the database")
+
+    public ResponseEntity<Page<Journey>> getAllJourney(
+            @RequestParam(defaultValue = "0", required = false) int pageNo,
+            @RequestParam(defaultValue = "10", required = false) int pageSize) {
+        return new ResponseEntity<>(journeyService.getAllJourneys(pageNo, pageSize), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "Find a journey by id")
+
     public ResponseEntity<Journey> getById(@PathVariable String id) {
         Optional<Journey> journey = Optional.ofNullable(journeyService.getById(id));
         if (journey.isPresent()) {
@@ -32,20 +41,10 @@ public class JourneyController {
         }
     }
 
-    @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(description = "all journeys")
+    @GetMapping(value = "/departureStation/{departureStationName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "Find all journeys by the name of departure station")
 
-    public ResponseEntity<Page<Journey>> getAllJourney(
-            @RequestParam(defaultValue = "0", required = false) int pageNo,
-             @RequestParam(defaultValue = "10", required = false) int pageSize)
-            {
-        return new ResponseEntity<>(journeyService.getAllJourneys(pageNo, pageSize), HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/station/{departureStationName}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(description = "get all journeys by the name of departure station")
-
-    public ResponseEntity<List<Journey>> getJourney(@PathVariable String departureStationName) {
+    public ResponseEntity<List<Journey>> getJourneyByDepartureStationName(@PathVariable String departureStationName) {
         return new ResponseEntity<>(journeyService.getJourneysByDepartureStation(departureStationName), HttpStatus.OK);
     }
 }

@@ -6,8 +6,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
-@Getter
-@Setter
 @Builder
 @Document(collection = "station_data")
 @NoArgsConstructor
@@ -42,5 +40,9 @@ public class Station {
     private double coordinateX;
     @Field("y")
     private double coordinateY;
+
+    private double totalJourneyDistanceFromStation;
+
+    private int averageJourneyDistanceFromStation;
 
 }

@@ -2,30 +2,51 @@ package journeys.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import journeys.model.Station;
-import journeys.repository.StationRepository;
+import journeys.service.StationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/stations")
 public class StationController {
 
     @Autowired
-    StationRepository stationRepository;
+    StationService stationService;
 
-    @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(description = "all stations")
+    @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "Find all stations from the database")
 
     public ResponseEntity<List<Station>> getAllStations() {
-        return new ResponseEntity<>(stationRepository.findAll(), HttpStatus.OK);
+        return new ResponseEntity<>(stationService.getAllStations(), HttpStatus.OK);
     }
+
+    @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "Find a station by id")
+    public ResponseEntity<Station> getById(@PathVariable String id) {
+
+        Optional<Station> station = Optional.ofNullable(stationService.getStationByID(id));
+        if (station.isPresent()) {
+            return new ResponseEntity<>(station.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping(value = "/stationName/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "Find all stations by name")
+
+    public ResponseEntity<List<Station>> getStationByName(@PathVariable String name) {
+        return new ResponseEntity<>(stationService.getStationsByNameEN(name), HttpStatus.OK
+        );
+    }
+
+
 }
 
 
