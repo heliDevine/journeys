@@ -2,6 +2,7 @@ package journeys.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -40,9 +41,7 @@ public class Station {
     private double coordinateX;
     @Field("y")
     private double coordinateY;
-
+@Transient
     private double totalJourneyDistanceFromStation;
-
-    private int averageJourneyDistanceFromStation;
 
 }

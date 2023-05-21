@@ -1,6 +1,7 @@
 package journeys.service;
 
 import journeys.model.Station;
+import journeys.repository.JourneyRepository;
 import journeys.repository.StationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,11 +9,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-
 public class StationService {
 
     @Autowired
     private StationRepository stationRepository;
+    @Autowired
+    private JourneyRepository journeyRepository;
 
     public List<Station> getAllStations() {
         return stationRepository.findAll();
@@ -24,5 +26,10 @@ public class StationService {
     }
     public Station getStationsByNameEN(String stationNameEN) {
         return stationRepository.findByStationNameEN(stationNameEN);
+    }
+
+    public Double totalJourneyDistanceTrial(int stationID) {
+
+       return journeyRepository.calculateTotalJourneyDistanceFromStation(stationID);
     }
 }

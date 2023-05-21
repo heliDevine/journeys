@@ -42,7 +42,12 @@ public class StationController {
         );
     }
 
+    @GetMapping(value = "/totalDistance{ID}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "total travel distance")
 
+    public  ResponseEntity<Double> totalDistance(@PathVariable int ID) {
+        return new ResponseEntity<>(stationService.totalJourneyDistanceTrial(ID), HttpStatus.OK);
+    }
 }
 
 
