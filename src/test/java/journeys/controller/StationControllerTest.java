@@ -3,16 +3,20 @@ package journeys.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import journeys.model.Station;
 import journeys.service.StationService;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -32,7 +36,7 @@ class StationControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void itShouldReturnListOfStations() throws Exception {
+    void itShouldReturnAllStationsPaginated() throws Exception {
         List<Station> stations;
         stations = Arrays.asList(
                 Station.builder()
@@ -44,10 +48,12 @@ class StationControllerTest {
                         .stationNameEN("Test station 2")
                         .build()
         );
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        Page<Station> stationPage = new PageImpl<>(stations, pageRequest, stations.size());
 
-        when(stationService.getAllStations()).thenReturn(stations);
-        mockMvc.perform(get("/stations/")).andExpect(status().isOk())
-                .andExpect(jsonPath("$", Matchers.hasSize(2)))
+        when(stationService.getAllStations(any(Pageable.class))).thenReturn(stationPage);
+        mockMvc.perform(get("/stations/?page=1&size=2"))
+                .andExpect(status().isOk())
                 .andDo(print());
     }
 

@@ -37,7 +37,7 @@ public class JourneyControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void itShouldReturnListOfJourneys() throws Exception{
+    void itShouldReturnAllJourneysPaginated() throws Exception{
         List<Journey> journeys;
         journeys = Arrays.asList(
                 Journey.builder()

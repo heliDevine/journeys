@@ -4,9 +4,9 @@ import journeys.model.Station;
 import journeys.repository.JourneyRepository;
 import journeys.repository.StationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class StationService {
@@ -16,8 +16,8 @@ public class StationService {
     @Autowired
     private JourneyRepository journeyRepository;
 
-    public List<Station> getAllStations() {
-        return stationRepository.findAll();
+    public Page<Station> getAllStations(Pageable pageable) {
+        return stationRepository.findAllStationsWithFilteredFields(pageable);
     }
 
     public Station getStationByID(String id) {
@@ -28,7 +28,7 @@ public class StationService {
         return stationRepository.findByStationNameEN(stationNameEN);
     }
 
-    public Double totalJourneyDistanceTrial(Station station) {
+    public Double totalJourneyDistance(Station station) {
         int stationID = station.getStationID();
        Double totalDistance = journeyRepository.calculateTotalJourneyDistanceFromStation(stationID);
         return totalDistance != null ? totalDistance : 0.0;

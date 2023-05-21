@@ -35,19 +35,20 @@ public class JourneyController {
     public ResponseEntity<Journey> getById(@PathVariable String id) {
 
         Optional<Journey> journey = Optional.ofNullable(journeyService.getById(id));
-        return journey.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        return journey.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping(value = "/departureStation/{departureStationName}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Find all journeys by the name of departure station")
-
 
     public ResponseEntity<List<Journey>> getJourneyByDepartureStationName(@PathVariable String departureStationName) {
 
         if (journeyService.getJourneysByDepartureStation(departureStationName).isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
-            return new ResponseEntity<>(journeyService.getJourneysByDepartureStation(departureStationName), HttpStatus.OK);
+            return new ResponseEntity<>(journeyService
+                    .getJourneysByDepartureStation(departureStationName), HttpStatus.OK);
         }
     }
 }

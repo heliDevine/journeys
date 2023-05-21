@@ -1,12 +1,17 @@
 package journeys.service;
 
+import journeys.model.Journey;
 import journeys.model.Station;
+import journeys.repository.JourneyRepository;
 import journeys.repository.StationRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.Arrays;
 import java.util.List;
@@ -19,6 +24,9 @@ class StationServiceTest {
 
     @Mock
     private StationRepository stationRepository;
+
+    @Mock
+    private JourneyRepository journeyRepository;
 
     @InjectMocks
     private StationService stationService = new StationService();
@@ -37,10 +45,12 @@ class StationServiceTest {
                         .stationNameEN("Test station 2")
                         .build()
         );
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        Page<Station> stationPagesPage = new PageImpl<>(stations, pageRequest, stations.size());
 
-        when(stationRepository.findAll()).thenReturn(stations);
+        when(stationRepository.findAllStationsWithFilteredFields(pageRequest)).thenReturn(stationPagesPage);
 
-        List<Station> actualStations  = stationService.getAllStations();
+        Page<Station> actualStations  = stationService.getAllStations(pageRequest);
         assertThat(stations).hasSize(2);
     }
 
@@ -99,5 +109,49 @@ class StationServiceTest {
         when(stationRepository.findByStationNameEN("Piccadilly Circus")).thenReturn(null);
         Station actualStation = stationService.getStationsByNameEN("Piccadilly Circus");
         assertThat(actualStation).isNull();
+    }
+
+    @Test
+    void itReturnsTotalDistanceFromStation() {
+        List<Journey> journeys = createJourneys();
+
+        Station station = Station.builder()
+                .id("123")
+                .StationID(1)
+                .stationNameEN("Kallio")
+                .build();
+
+        when(journeyRepository.calculateTotalJourneyDistanceFromStation(station.getStationID()))
+                .thenReturn(1500.0);
+        Double totalDistance = stationService.totalJourneyDistance(station);
+
+        assertThat(totalDistance).isEqualTo(1500.0);
+
+    }
+
+
+    private List<Journey> createJourneys() {
+        List<Journey> journeys;
+        journeys = Arrays.asList(
+                Journey.builder()
+                        .id("123")
+                        .departureStationId(1)
+                        .departureStationName("Kallio")
+                        .distance(1000)
+                        .build(),
+                Journey.builder()
+                        .id("456")
+                        .departureStationId(2)
+                        .departureStationName("Manchester")
+                        .distance(2000)
+                        .build(),
+                Journey.builder()
+                        .id("789")
+                        .departureStationId(1)
+                        .departureStationName("Kallio")
+                        .distance(500)
+                        .build()
+        );
+        return journeys;
     }
 }
