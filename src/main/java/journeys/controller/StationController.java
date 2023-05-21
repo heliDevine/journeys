@@ -31,11 +31,7 @@ public class StationController {
     public ResponseEntity<Station> getById(@PathVariable String id) {
 
         Optional<Station> station = Optional.ofNullable(stationService.getStationByID(id));
-        if (station.isPresent()) {
-            return new ResponseEntity<>(station.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return station.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping(value = "/stationName/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
