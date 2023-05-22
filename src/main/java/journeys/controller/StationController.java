@@ -35,6 +35,14 @@ public class StationController {
 
         for (Station station : stationsPage.getContent()) {
             double totalDistance = stationService.totalJourneyDistance(station);
+            long totalDepartedCount = stationService.totalJourneyCountDeparted(station);
+            long countDeparted = totalDepartedCount != 0 ? totalDepartedCount : 0L;
+
+            long totalReturnCount = stationService.totalJourneyCountReturned(station);
+            long countReturned = totalReturnCount != 0 ? totalReturnCount : 0L;
+
+            station.setTotalDepartingJourneys(countDeparted);
+            station.setTotalReturnedJourneys(countReturned);
             station.setTotalJourneyDistanceFromStation(totalDistance);
             stationsWithTotalDistance.add(station);
         }
@@ -53,6 +61,7 @@ public class StationController {
         if(station != null) {
             double totalDistance = stationService.totalJourneyDistance(station);
             station.setTotalJourneyDistanceFromStation(totalDistance);
+
             return new ResponseEntity<>(station, HttpStatus.OK);
         }else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

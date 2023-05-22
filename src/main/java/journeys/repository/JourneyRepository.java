@@ -27,4 +27,8 @@ public interface JourneyRepository extends MongoRepository<Journey, ObjectId> {
     })
     Double calculateTotalJourneyDistanceFromStation(int departureStationId);
 
+    Long countByDepartureStationId(int departureStationId);
+
+    Long countByReturnStationId(int returnStationId);
+
 }

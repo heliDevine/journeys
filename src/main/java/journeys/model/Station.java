@@ -1,4 +1,5 @@
 package journeys.model;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import org.springframework.data.annotation.Id;
@@ -41,7 +42,11 @@ public class Station {
     private double coordinateX;
     @Field("y")
     private double coordinateY;
-@Transient
+    @Transient
     private double totalJourneyDistanceFromStation;
+    @Transient
+    private long totalDepartingJourneys;
+    @Transient
+    private long totalReturnedJourneys;
 
 }

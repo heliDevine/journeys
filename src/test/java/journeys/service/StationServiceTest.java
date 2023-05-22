@@ -129,6 +129,38 @@ class StationServiceTest {
 
     }
 
+    @Test
+    void itReturnsTotalCountOfDepartingJourneys() {
+        List<Journey> journeys = createJourneys();
+        Station station = Station.builder()
+                .id("123")
+                .StationID(1)
+                .stationNameEN("Kallio")
+                .build();
+        when(journeyRepository.countByDepartureStationId(station.getStationID()))
+                .thenReturn(1L);
+
+        Long totalCount = stationService.totalJourneyCountDeparted(station);
+        assertThat(totalCount).isEqualTo(1);
+
+    }
+
+    @Test
+    void itReturnsTotalCountOfReturningJourneys() {
+        List<Journey> journeys = createJourneys();
+        Station station = Station.builder()
+                .id("123")
+                .StationID(1)
+                .stationNameEN("Kallio")
+                .build();
+        when(journeyRepository.countByReturnStationId(station.getStationID()))
+                .thenReturn(2L);
+
+        Long totalCount = stationService.totalJourneyCountReturned(station);
+        assertThat(totalCount).isEqualTo(2);
+
+    }
+
 
     private List<Journey> createJourneys() {
         List<Journey> journeys;

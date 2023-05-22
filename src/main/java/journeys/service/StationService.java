@@ -33,4 +33,15 @@ public class StationService {
        Double totalDistance = journeyRepository.calculateTotalJourneyDistanceFromStation(stationID);
         return totalDistance != null ? totalDistance : 0.0;
     }
+
+    public long totalJourneyCountDeparted(Station station) {
+        int stationID = station.getStationID();
+        long totalCount = journeyRepository.countByDepartureStationId(stationID);
+        return totalCount;
+    }
+    public long totalJourneyCountReturned(Station station) {
+        int stationID = station.getStationID();
+        long totalCount = journeyRepository.countByReturnStationId(stationID);
+        return totalCount;
+    }
 }
