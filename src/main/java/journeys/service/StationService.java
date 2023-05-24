@@ -36,12 +36,10 @@ public class StationService {
 
     public long totalJourneyCountDeparted(Station station) {
         int stationID = station.getStationID();
-        long totalCount = journeyRepository.countByDepartureStationId(stationID);
-        return totalCount;
+        return journeyRepository.countByDepartureStationId(stationID);
     }
     public long totalJourneyCountReturned(Station station) {
         int stationID = station.getStationID();
-        long totalCount = journeyRepository.countByReturnStationId(stationID);
-        return totalCount;
+        return journeyRepository.countByReturnStationId(stationID);
     }
 }

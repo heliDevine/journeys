@@ -60,7 +60,7 @@ class JourneyServiceTest {
                 .thenReturn(Collections.emptyList());
 
         List<Journey> actualJourneys = journeyService.getJourneysByDepartureStation("London");
-        assertThat(actualJourneys).hasSize(0);
+        assertThat(actualJourneys).isEmpty();
     }
 
     @Test

@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(JourneyController.class)
-public class JourneyControllerTest {
+class JourneyControllerTest {
 
     @MockBean
     private JourneyService journeyService;

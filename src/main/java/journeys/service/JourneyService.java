@@ -37,9 +37,7 @@ public class JourneyService {
 
     public Journey createJourney(Journey journey) {
         Station departureStation = stationRepository.findByStationNameEN(journey.getDepartureStationName());
-        System.out.println(departureStation);
         Station returnStation = stationRepository.findByStationNameEN(journey.getReturnStationName());
-        System.out.println("************************"+returnStation);
         if ((departureStation != null) && (returnStation != null)) {
             journey.setDepartureStationId(departureStation.getStationID());
             journey.setReturnStationId(returnStation.getStationID());
