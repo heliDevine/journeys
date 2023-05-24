@@ -29,5 +29,9 @@ public class JourneyService {
     public List<Journey> getJourneysByDepartureStation(String departureStationName) {
         return journeyRepository.findByDepartureStationName(departureStationName);
     }
+
+    public Journey addJourney(Journey journey) {
+        return journeyRepository.save(journey);
+    }
 }
 

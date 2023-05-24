@@ -51,6 +51,13 @@ public class JourneyController {
                     .getJourneysByDepartureStation(departureStationName), HttpStatus.OK);
         }
     }
+
+    @PostMapping (value="/journey", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "Add a new journey to the database")
+
+    public ResponseEntity<Journey> createJourney(@RequestBody Journey journey) {
+        return new ResponseEntity<>(journeyService.addJourney(journey), HttpStatus.OK);
+    }
 }
 
 
