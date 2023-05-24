@@ -23,10 +23,11 @@ public class Journey {
 
     private String returnTime;
 
+    @JsonIgnore
     private int departureStationId;
 
     private String departureStationName;
-
+    @JsonIgnore
     private int returnStationId;
 
     private String returnStationName;

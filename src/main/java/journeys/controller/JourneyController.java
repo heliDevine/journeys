@@ -56,7 +56,7 @@ public class JourneyController {
     @Operation(description = "Add a new journey to the database")
 
     public ResponseEntity<Journey> createJourney(@RequestBody Journey journey) {
-        return new ResponseEntity<>(journeyService.addJourney(journey), HttpStatus.OK);
+        return new ResponseEntity<>(journeyService.createJourney(journey), HttpStatus.OK);
     }
 }
 
