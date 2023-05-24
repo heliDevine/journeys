@@ -22,7 +22,6 @@ public class JourneyController {
 
     @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Find all journeys from the database")
-
     public ResponseEntity<Page<Journey>> getAllJourney(
             @RequestParam(defaultValue = "0", required = false) int pageNo,
             @RequestParam(defaultValue = "10", required = false) int pageSize) {
@@ -31,9 +30,7 @@ public class JourneyController {
 
     @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Find a journey by id")
-
     public ResponseEntity<Journey> getById(@PathVariable String id) {
-
         Optional<Journey> journey = Optional.ofNullable(journeyService.getById(id));
         return journey.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));

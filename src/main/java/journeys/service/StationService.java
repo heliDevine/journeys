@@ -19,11 +19,10 @@ public class StationService {
     public Page<Station> getAllStations(Pageable pageable) {
         return stationRepository.findAllStationsWithFilteredFields(pageable);
     }
-
     public Station getStationByID(String id) {
         return stationRepository.findById(id);
-
     }
+
     public Station getStationsByNameEN(String stationNameEN) {
         return stationRepository.findByStationNameEN(stationNameEN);
     }
@@ -38,6 +37,7 @@ public class StationService {
         int stationID = station.getStationID();
         return journeyRepository.countByDepartureStationId(stationID);
     }
+
     public long totalJourneyCountReturned(Station station) {
         int stationID = station.getStationID();
         return journeyRepository.countByReturnStationId(stationID);

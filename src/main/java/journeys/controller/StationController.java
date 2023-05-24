@@ -58,12 +58,12 @@ public class StationController {
     public ResponseEntity<Station> getById(@PathVariable String id) {
 
         Station station = stationService.getStationByID(id);
-        if(station != null) {
+        if (station != null) {
             double totalDistance = stationService.totalJourneyDistance(station);
             station.setTotalJourneyDistanceFromStation(totalDistance);
 
             return new ResponseEntity<>(station, HttpStatus.OK);
-        }else {
+        } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
@@ -79,7 +79,7 @@ public class StationController {
     @GetMapping(value = "/totalDistance{ID}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "total travel distance")
 
-    public  ResponseEntity<Double> totalDistance(@PathVariable Station station) {
+    public ResponseEntity<Double> totalDistance(@PathVariable Station station) {
         return new ResponseEntity<>(stationService.totalJourneyDistance(station), HttpStatus.OK);
     }
 }

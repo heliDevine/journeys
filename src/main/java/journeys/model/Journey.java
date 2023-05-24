@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
 @Builder
@@ -19,21 +20,30 @@ public class Journey {
     @JsonIgnore
     private String id;
 
+    @Field("departureTime")
     private String departureTime;
 
+    @Field("returnTime")
     private String returnTime;
 
     @JsonIgnore
+    @Field("departureStationId")
     private int departureStationId;
 
+    @Field("departureStationName")
     private String departureStationName;
+
     @JsonIgnore
+    @Field("returnStationId")
     private int returnStationId;
 
+    @Field("returnStationName")
     private String returnStationName;
 
+    @Field("distance")
     private int distance;
 
+    @Field("duration")
     private int duration;
 
 }

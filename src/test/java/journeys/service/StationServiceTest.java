@@ -47,10 +47,9 @@ class StationServiceTest {
         );
         PageRequest pageRequest = PageRequest.of(0, 2);
         Page<Station> stationPagesPage = new PageImpl<>(stations, pageRequest, stations.size());
-
         when(stationRepository.findAllStationsWithFilteredFields(pageRequest)).thenReturn(stationPagesPage);
-
         Page<Station> actualStations  = stationService.getAllStations(pageRequest);
+
         assertThat(stations).hasSize(2);
     }
 
@@ -61,10 +60,9 @@ class StationServiceTest {
                 .id(id)
                 .stationNameEN("Piccadilly Circus")
                 .build();
-
         when(stationRepository.findById("123")).thenReturn(station);
-
         Station actualStation = stationService.getStationByID("123");
+
         assertThat(actualStation.getStationNameEN()).isEqualTo("Piccadilly Circus");
     }
 
@@ -76,9 +74,9 @@ class StationServiceTest {
                 .id(id)
                 .stationNameEN("Piccadilly Circus")
                 .build();
-
         when(stationRepository.findById("123")).thenReturn(null);
         Station actualStation = stationService.getStationByID("123");
+
         assertThat(actualStation).isNull();
     }
 
@@ -89,7 +87,6 @@ class StationServiceTest {
                 .id(id)
                 .stationNameEN("Piccadilly Circus")
                 .build();
-
         when(stationRepository.findByStationNameEN("Piccadilly Circus")).thenReturn(station);
 
         Station actualStation = stationService.getStationsByNameEN("Piccadilly Circus");
@@ -105,9 +102,9 @@ class StationServiceTest {
                 .id(id)
                 .stationNameEN("Piccadilly Circus")
                 .build();
-
         when(stationRepository.findByStationNameEN("Piccadilly Circus")).thenReturn(null);
         Station actualStation = stationService.getStationsByNameEN("Piccadilly Circus");
+
         assertThat(actualStation).isNull();
     }
 
@@ -120,7 +117,6 @@ class StationServiceTest {
                 .StationID(1)
                 .stationNameEN("Kallio")
                 .build();
-
         when(journeyRepository.calculateTotalJourneyDistanceFromStation(station.getStationID()))
                 .thenReturn(1500.0);
         Double totalDistance = stationService.totalJourneyDistance(station);

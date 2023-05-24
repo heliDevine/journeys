@@ -49,7 +49,8 @@ class JourneyServiceTest {
         when(journeyRepository.findByDepartureStationName("Manchester"))
                 .thenReturn(Collections.singletonList(journeys.get(1)));
 
-        List<Journey> actualJourneys = journeyService.getJourneysByDepartureStation("Manchester");
+        List<Journey> actualJourneys = journeyService
+                .getJourneysByDepartureStation("Manchester");
         assertThat(actualJourneys).hasSize(1);
     }
     @Test
@@ -59,7 +60,8 @@ class JourneyServiceTest {
         when(journeyRepository.findByDepartureStationName("London"))
                 .thenReturn(Collections.emptyList());
 
-        List<Journey> actualJourneys = journeyService.getJourneysByDepartureStation("London");
+        List<Journey> actualJourneys = journeyService
+                .getJourneysByDepartureStation("London");
         assertThat(actualJourneys).isEmpty();
     }
 

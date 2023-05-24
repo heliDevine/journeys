@@ -1,5 +1,6 @@
 package journeys.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import org.springframework.data.annotation.Id;
@@ -18,34 +19,52 @@ public class Station {
     @Id
     private String id;
 
+    @JsonIgnore
+    @Field("FID")
     private int FID;
+
     @Field("ID")
     private int StationID;
+
     @Field("nimi")
     private String stationNameFI;
+
     @Field("namn")
     private String stationNameSE;
+
     @Field("name")
     private String stationNameEN;
+
     @Field("osoite")
     private String stationAddressFI;
+
     @Field("address")
     private String stationAddressSE;
+
+    @Field("city")
     private String city;
+
     @Field("stad")
     private String citySE;
+
     @Field("operator")
     private String bikeOperator;
+
     @Field("capacity")
     private int stationCapacity;
+
     @Field("x")
     private double coordinateX;
+
     @Field("y")
     private double coordinateY;
+
     @Transient
     private double totalJourneyDistanceFromStation;
+
     @Transient
     private long totalDepartingJourneys;
+
     @Transient
     private long totalReturnedJourneys;
 
