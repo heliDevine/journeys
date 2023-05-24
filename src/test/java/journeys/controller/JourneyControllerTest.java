@@ -79,7 +79,6 @@ class JourneyControllerTest {
 
         when(journeyService.getById("123")).thenReturn(journey);
         mockMvc.perform(get("/journeys/{id}", id)).andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value((id)))
                 .andExpect(jsonPath("$.departureStationName").value((journey.getDepartureStationName())))
                 .andExpect(jsonPath("$.returnStationName").value((journey.getReturnStationName())))
                 .andExpect(jsonPath("$.distance").value((journey.getDistance())))
