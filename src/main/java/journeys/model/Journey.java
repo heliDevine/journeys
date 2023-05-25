@@ -2,6 +2,7 @@ package journeys.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -41,9 +42,11 @@ public class Journey {
     private String returnStationName;
 
     @Field("distance")
+    @Min(10)
     private int distance;
 
     @Field("duration")
+    @Min(10)
     private int duration;
 
 }

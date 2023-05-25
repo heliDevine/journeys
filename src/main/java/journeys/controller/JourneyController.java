@@ -1,6 +1,7 @@
 package journeys.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import journeys.model.Journey;
 import journeys.service.JourneyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -49,13 +51,28 @@ public class JourneyController {
         }
     }
 
-    @PostMapping (value="/journey", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/journey", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Add a new journey to the database")
+    public ResponseEntity<?> createJourney(@Validated @RequestBody @Valid Journey journey) {
+        if (journey.getDistance() < 10 || journey.getDuration() < 10) {
+            String errorMessage = "Distance needs to be more than " +
+                    "10 metres and duration needs to be more than 10 seconds";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessage(errorMessage));
+        }
+        Journey createdJourney = journeyService.createJourney(journey);
 
-    public ResponseEntity<Journey> createJourney(@RequestBody Journey journey) {
-        return new ResponseEntity<>(journeyService.createJourney(journey), HttpStatus.CREATED);
+        if (createdJourney != null) {
+            return new ResponseEntity<>((createdJourney), HttpStatus.CREATED);
+        } else {
+            String errorMessage = "Journey cannot be saved, station doesn't exist";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessage(errorMessage));
+        }
     }
 }
+
+
+
+
 
 
 
