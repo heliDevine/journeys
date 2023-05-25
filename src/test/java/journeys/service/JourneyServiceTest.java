@@ -1,7 +1,9 @@
 package journeys.service;
 
 import journeys.model.Journey;
+import journeys.model.Station;
 import journeys.repository.JourneyRepository;
+import journeys.repository.StationRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,13 +18,17 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class JourneyServiceTest {
 
     @Mock
     private JourneyRepository journeyRepository;
+
+    @Mock
+    StationRepository stationRepository;
 
     @InjectMocks
     private JourneyService journeyService;
@@ -72,6 +78,47 @@ class JourneyServiceTest {
         when(journeyRepository.findById("1234")).thenReturn(journeys.get(0));
         Journey actualJourney = journeyService.getById("1234");
         assertThat(actualJourney.getDepartureStationName()).isEqualTo("DepartStation");
+    }
+
+    @Test
+    void itSavesNewJourneyWithStationIdsWhenIdsExist() {
+
+        Station departureStation = Station.builder().StationID(1).build();
+        Station returnStation = Station.builder().StationID(2).build();
+        when(stationRepository.findByStationNameEN("Firswood")).thenReturn(departureStation);
+        when(stationRepository.findByStationNameEN("Market Street")).thenReturn(returnStation);
+
+        Journey journey = Journey.builder()
+                .id("123")
+                .departureStationName("Firswood")
+                .returnStationName("Market Street")
+                .distance(5000)
+                .duration(4000)
+                .build();
+
+            Journey savedJourney = journeyService.createJourney(journey);
+            verify(journeyRepository, times(1)).save(journey);
+            assertThat(journey.getDepartureStationId()).isEqualTo(savedJourney.getDepartureStationId());
+            assertThat(journey.getReturnStationId()).isEqualTo(savedJourney.getReturnStationId());
+        }
+
+    @Test
+    void itDoesntSaveJourneyWithoutStationIds() {
+
+        when(stationRepository.findByStationNameEN("Firswood")).thenReturn(null);
+        when(stationRepository.findByStationNameEN("Market Street")).thenReturn(null);
+
+        Journey journey = Journey.builder()
+                .id("123")
+                .departureStationName("Firswood")
+                .returnStationName("Market Street")
+                .distance(5000)
+                .duration(4000)
+                .build();
+
+        Journey savedJourney = journeyService.createJourney(journey);
+        verify(journeyRepository, never()).save(journey);
+        assertNull(savedJourney);
     }
 
     private List<Journey> createJourneys() {

@@ -43,7 +43,7 @@ public class JourneyService {
             journey.setReturnStationId(returnStation.getStationID());
             journeyRepository.save(journey);
         } else {
-            return journey;
+            return null;
         }
         return journey;
     }

@@ -87,7 +87,6 @@ class JourneyControllerTest {
                 .andExpect(jsonPath("$.distance").value((journey.getDistance())))
                 .andExpect(jsonPath("$.duration").value((journey.getDuration())))
                 .andDo(print());
-
     }
 
     @Test
@@ -97,8 +96,8 @@ class JourneyControllerTest {
         mockMvc.perform(get("/journeys/123"))
                 .andExpect(status().isNotFound())
                 .andDo(print());
-
     }
+
     @Test
     void itShouldReturn200andJourneyByDepartureStationName() throws Exception {
 
@@ -151,8 +150,8 @@ class JourneyControllerTest {
         mockMvc.perform(post("/journeys/journey")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(journeyInput)))
-                .andExpect(status().isCreated());
-
+                .andExpect(status().isCreated())
+                .andDo(print());
     }
 
     private static String asJsonString(Object obj) throws JsonProcessingException {
