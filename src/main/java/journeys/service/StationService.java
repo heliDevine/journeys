@@ -5,8 +5,12 @@ import journeys.repository.JourneyRepository;
 import journeys.repository.StationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class StationService {
@@ -42,4 +46,34 @@ public class StationService {
         int stationID = station.getStationID();
         return journeyRepository.countByReturnStationId(stationID);
     }
+
+    public Page<Station> processPagedStation(Pageable pageable) {
+
+        Page<Station> stationsPage = stationRepository.findAllStationsWithFilteredFields(pageable);
+
+        List<Station> stationsWithTotalDistance = new ArrayList<>();
+
+        for (Station station : stationsPage.getContent()) {
+            int stationID = station.getStationID();
+            double totalDistance = journeyRepository.calculateTotalJourneyDistanceFromStation(stationID);
+            long countDepartedJourneys = journeyRepository.countByDepartureStationId(stationID);
+            long countReturnedJourneys = journeyRepository.countByReturnStationId(stationID);
+
+            if(totalDistance !=0.0) {
+                station.setTotalJourneyDistanceFromStation(totalDistance);
+                station.setTotalDepartingJourneys(countDepartedJourneys);
+                station.setTotalReturnedJourneys(countReturnedJourneys);
+            }else {
+                station.setTotalJourneyDistanceFromStation(0.0);
+            }
+            stationsWithTotalDistance.add(station);
+        }
+        Page<Station> processedStations =
+                new PageImpl<>(stationsWithTotalDistance, pageable, stationsPage.getTotalElements());
+
+        return processedStations;
+    }
+
+
+
 }

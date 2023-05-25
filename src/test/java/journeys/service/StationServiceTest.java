@@ -50,7 +50,7 @@ class StationServiceTest {
         when(stationRepository.findAllStationsWithFilteredFields(pageRequest)).thenReturn(stationPagesPage);
         Page<Station> actualStations  = stationService.getAllStations(pageRequest);
 
-        assertThat(stations).hasSize(2);
+        assertThat(actualStations).hasSize(2);
     }
 
     @Test
@@ -110,7 +110,6 @@ class StationServiceTest {
 
     @Test
     void itReturnsTotalDistanceFromStation() {
-        List<Journey> journeys = createJourneys();
 
         Station station = Station.builder()
                 .id("123")
@@ -119,44 +118,49 @@ class StationServiceTest {
                 .build();
         when(journeyRepository.calculateTotalJourneyDistanceFromStation(station.getStationID()))
                 .thenReturn(1500.0);
-        Double totalDistance = stationService.totalJourneyDistance(station);
 
+        Double totalDistance = stationService.totalJourneyDistance(station);
         assertThat(totalDistance).isEqualTo(1500.0);
 
     }
 
     @Test
     void itReturnsTotalCountOfDepartingJourneys() {
-        List<Journey> journeys = createJourneys();
+
         Station station = Station.builder()
                 .id("123")
                 .StationID(1)
                 .stationNameEN("Kallio")
+                .totalReturnedJourneys(3)
+                .totalDepartingJourneys(2)
+                .totalJourneyDistanceFromStation(1500)
                 .build();
         when(journeyRepository.countByDepartureStationId(station.getStationID()))
-                .thenReturn(1L);
+                .thenReturn(station.getTotalDepartingJourneys());
 
         Long totalCount = stationService.totalJourneyCountDeparted(station);
-        assertThat(totalCount).isEqualTo(1);
+        assertThat(totalCount).isEqualTo(2);
 
     }
 
     @Test
     void itReturnsTotalCountOfReturningJourneys() {
-        List<Journey> journeys = createJourneys();
+
         Station station = Station.builder()
                 .id("123")
                 .StationID(1)
                 .stationNameEN("Kallio")
+                .totalReturnedJourneys(3)
+                .totalDepartingJourneys(2)
+                .totalJourneyDistanceFromStation(1500)
                 .build();
         when(journeyRepository.countByReturnStationId(station.getStationID()))
-                .thenReturn(2L);
+                .thenReturn(station.getTotalReturnedJourneys());
 
         Long totalCount = stationService.totalJourneyCountReturned(station);
-        assertThat(totalCount).isEqualTo(2);
+        assertThat(totalCount).isEqualTo(3);
 
     }
-
 
     private List<Journey> createJourneys() {
         List<Journey> journeys;

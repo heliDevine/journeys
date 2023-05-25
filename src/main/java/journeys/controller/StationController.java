@@ -5,16 +5,12 @@ import journeys.model.Station;
 import journeys.service.StationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/stations")
@@ -29,28 +25,9 @@ public class StationController {
             @RequestParam(defaultValue = "0", required = false) int pageNo,
             @RequestParam(defaultValue = "10", required = false) int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
-        Page<Station> stationsPage = stationService.getAllStations(pageable);
+        Page<Station>stationsWithAddedFields= stationService.processPagedStation(pageable);
 
-        List<Station> stationsWithTotalDistance = new ArrayList<>();
-
-        for (Station station : stationsPage.getContent()) {
-            double totalDistance = stationService.totalJourneyDistance(station);
-            long totalDepartedCount = stationService.totalJourneyCountDeparted(station);
-            long countDeparted = totalDepartedCount != 0 ? totalDepartedCount : 0L;
-
-            long totalReturnCount = stationService.totalJourneyCountReturned(station);
-            long countReturned = totalReturnCount != 0 ? totalReturnCount : 0L;
-
-            station.setTotalDepartingJourneys(countDeparted);
-            station.setTotalReturnedJourneys(countReturned);
-            station.setTotalJourneyDistanceFromStation(totalDistance);
-            stationsWithTotalDistance.add(station);
-        }
-
-        Page<Station> stationsWithTotalDistancePage =
-                new PageImpl<>(stationsWithTotalDistance, pageable, stationsPage.getTotalElements());
-
-        return new ResponseEntity<>(stationsWithTotalDistancePage, HttpStatus.OK);
+        return new ResponseEntity<>(stationsWithAddedFields, HttpStatus.OK);
     }
 
     @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
