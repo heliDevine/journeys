@@ -1,5 +1,6 @@
 package journeys.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import journeys.model.Journey;
 import journeys.service.JourneyService;
@@ -11,6 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
@@ -20,6 +22,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -133,4 +136,29 @@ class JourneyControllerTest {
                 .andExpect(status().isNotFound())
                 .andDo(print());
     }
+
+    @Test
+    void itShouldReturn201andCreatesNewJourney() throws Exception {
+
+        Journey journeyInput = Journey.builder()
+                .id("123")
+                .departureStationName("Firswood")
+                .returnStationName("Market Street")
+                .distance(5000)
+                .duration(4000)
+                .build();
+
+        mockMvc.perform(post("/journeys/journey")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(journeyInput)))
+                .andExpect(status().isCreated());
+
+    }
+
+    private static String asJsonString(Object obj) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.writeValueAsString(obj);
+
+    }
 }
+
