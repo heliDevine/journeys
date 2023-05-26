@@ -10,6 +10,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -38,9 +40,23 @@ public class JourneyService {
     public Journey createJourney(Journey journey) {
         Station departureStation = stationRepository.findByStationNameEN(journey.getDepartureStationName());
         Station returnStation = stationRepository.findByStationNameEN(journey.getReturnStationName());
+
+        /// set departure time
+        LocalDateTime departureTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String departureTimeString = departureTime.format(formatter);
+
+        ///calculate return time
+
+        int durationInSeconds  =journey.getDuration();
+        LocalDateTime returnTime = departureTime.plusSeconds(durationInSeconds);
+        String returnTimeString = returnTime.format(formatter);
+
         if ((departureStation != null) && (returnStation != null)) {
             journey.setDepartureStationId(departureStation.getStationID());
             journey.setReturnStationId(returnStation.getStationID());
+            journey.setDepartureTime(departureTimeString);
+            journey.setReturnTime(returnTimeString);
             journeyRepository.save(journey);
         } else {
             return null;
