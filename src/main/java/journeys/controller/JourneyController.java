@@ -55,7 +55,7 @@ public class JourneyController {
     @Operation(description = "Add a new journey to the database")
     public ResponseEntity<?> createJourney(@Validated @RequestBody @Valid Journey journey) {
         if (journey.getDistance() < 10 || journey.getDuration() < 10) {
-            String errorMessage = "Distance needs to be more than " +
+            String errorMessage = "Distance needs to be longer than " +
                     "10 metres and duration needs to be more than 10 seconds";
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessage(errorMessage));
         }

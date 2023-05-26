@@ -19,13 +19,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(JourneyController.class)
 class JourneyControllerTest {
@@ -40,7 +40,7 @@ class JourneyControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void itShouldReturnAllJourneysPaginated() throws Exception{
+    void itReturnsAllJourneysPaginated() throws Exception {
         List<Journey> journeys;
         journeys = Arrays.asList(
                 Journey.builder()
@@ -61,16 +61,15 @@ class JourneyControllerTest {
         PageRequest pageRequest = PageRequest.of(0, 2);
         Page<Journey> journeysPage = new PageImpl<>(journeys, pageRequest, journeys.size());
 
-       when(journeyService.getAllJourneys(anyInt(), anyInt()))
-               .thenReturn(journeysPage);
-       mockMvc.perform(get("/journeys/?page=1&size=2"))
-               .andExpect(status().isOk())
-               .andDo(print());
-
+        when(journeyService.getAllJourneys(anyInt(), anyInt()))
+                .thenReturn(journeysPage);
+        mockMvc.perform(get("/journeys/?page=1&size=2"))
+                .andExpect(status().isOk())
+                .andDo(print());
     }
 
     @Test
-    void itShouldReturn200andJourneyById() throws Exception {
+    void itReturns200andJourneyById() throws Exception {
         String id = "123";
         Journey journey = Journey.builder()
                 .id(id)
@@ -90,7 +89,7 @@ class JourneyControllerTest {
     }
 
     @Test
-    void itShouldReturn404whenIdIsNotFound() throws Exception {
+    void itReturns404whenIdIsNotFound() throws Exception {
 
         when(journeyService.getById("123")).thenReturn(null);
         mockMvc.perform(get("/journeys/123"))
@@ -99,7 +98,7 @@ class JourneyControllerTest {
     }
 
     @Test
-    void itShouldReturn200andJourneyByDepartureStationName() throws Exception {
+    void itReturns200andJourneysByDepartureStationName() throws Exception {
 
         String departureStationName = "Firswood";
 
@@ -121,23 +120,28 @@ class JourneyControllerTest {
                         .build()
         );
 
-        when(journeyService.getJourneysByDepartureStation("Firswood")).thenReturn(Collections.singletonList(journeys.get(0)));
-        mockMvc.perform(get("/journeys/departureStation/{departureStationName}", departureStationName)).andExpect(status().isOk())
+        when(journeyService.getJourneysByDepartureStation(any(String.class)))
+                .thenReturn(Collections.singletonList(journeys.get(0)));
+        mockMvc.perform(get("/journeys/departureStation/{departureStationName}", departureStationName))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$", Matchers.hasSize(1)))
+                .andExpect(jsonPath("$.[0].returnStationName").value("Market Street"))
                 .andDo(print());
     }
 
     @Test
-    void itShouldReturn404whenDepartureStationDoesntExist() throws Exception {
+    void itReturns404IfNoJourneysFound() throws Exception {
 
-        when(journeyService.getJourneysByDepartureStation("London")).thenReturn(null);
-        mockMvc.perform(get("/journeys/London"))
+        String departureStationName = "London";
+
+        when(journeyService.getJourneysByDepartureStation("London")).thenReturn(Collections.emptyList());
+        mockMvc.perform(get("/journeys/{departureStationName}", departureStationName))
                 .andExpect(status().isNotFound())
                 .andDo(print());
     }
 
     @Test
-    void itShouldReturn201andCreatesNewJourney() throws Exception {
+    void itReturns201andCreatesNewJourney() throws Exception {
 
         Journey journeyInput = Journey.builder()
                 .id("123")
@@ -147,17 +151,104 @@ class JourneyControllerTest {
                 .duration(4000)
                 .build();
 
+        Journey createdJourney = Journey.builder()
+                .id("123")
+                .departureStationName("Firswood")
+                .departureStationId(1)
+                .returnStationName("Market Street")
+                .returnStationId(2)
+                .distance(5000)
+                .duration(4000)
+                .build();
+
+        when(journeyService.createJourney(any(Journey.class))).thenReturn(createdJourney);
+
         mockMvc.perform(post("/journeys/journey")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(journeyInput)))
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").doesNotExist())
+                .andExpect(jsonPath("$.departureStationName").value("Firswood"))
+                .andExpect(jsonPath("$.departureStationId").doesNotExist())
+                .andExpect(jsonPath("$.returnStationName").value("Market Street"))
+                .andExpect(jsonPath("$.returnStationId").doesNotExist())
+                .andExpect(jsonPath("$.distance").value(5000))
+                .andExpect(jsonPath("$.duration").value(4000))
+                .andDo(print());
+
+        verify(journeyService, times(1)).createJourney(any(Journey.class));
+    }
+
+    @Test
+    void itReturns400ifDistanceIsUnder10MetresAndSendsErrorMessage() throws Exception {
+
+        Journey journeyInput = Journey.builder()
+                .id("123")
+                .departureStationName("Firswood")
+                .returnStationName("Market Street")
+                .distance(9)
+                .duration(4000)
+                .build();
+
+        when(journeyService.createJourney(any(Journey.class))).thenReturn(null);
+
+        mockMvc.perform(post("/journeys/journey")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(journeyInput)))
+                .andExpect(status().isBadRequest())
                 .andDo(print());
     }
+
+    @Test
+    void itReturns400ifDurationIsUnder10SecondsAndSendsErrorMessage() throws Exception {
+        Journey journeyInput = Journey.builder()
+                .id("123")
+                .departureStationName("Firswood")
+                .returnStationName("Market Street")
+                .distance(1000)
+                .duration(9)
+                .build();
+
+        String errorMessage = "Distance needs to be longer than " +
+                "10 metres and duration needs to be more than 10 seconds";
+
+        when(journeyService.createJourney(any(Journey.class))).thenReturn(null);
+
+        mockMvc.perform(post("/journeys/journey")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(journeyInput)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorMessage").value(errorMessage))
+                .andDo(print());
+    }
+
+    @Test
+    void itReturns400ifStationDoesntExist() throws Exception {
+
+        Journey journeyInput = Journey.builder()
+                .id("123")
+                .returnStationName("Market Street")
+                .distance(1000)
+                .duration(1000)
+                .build();
+
+        String errorMessage = "Journey cannot be saved, station doesn't exist";
+
+        when(journeyService.createJourney(any(Journey.class))).thenReturn(null);
+
+        mockMvc.perform(post("/journeys/journey")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(journeyInput)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorMessage").value(errorMessage))
+                .andDo(print());
+    }
+
+    @Test
 
     private static String asJsonString(Object obj) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.writeValueAsString(obj);
-
     }
 }
 
