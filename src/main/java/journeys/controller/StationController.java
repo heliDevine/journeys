@@ -32,7 +32,7 @@ public class StationController {
 
     @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Find a station by id")
-    public ResponseEntity<Station> getById(@PathVariable String id) {
+    public ResponseEntity<Object> getById(@PathVariable String id) {
 
         Station station = stationService.getStationByID(id);
         if (station != null) {
@@ -41,23 +41,21 @@ public class StationController {
 
             return new ResponseEntity<>(station, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            String errorMessage = "Station doesn't exist";
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessage(errorMessage));
         }
     }
 
     @GetMapping(value = "/stationName/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(description = "Find all stations by name")
+    @Operation(description = "Find station by name")
+    public ResponseEntity<Object> getStationByName(@PathVariable String name) {
+      Station station = stationService.getStationsByNameEN(name);
 
-    public ResponseEntity<Station> getStationByName(@PathVariable String name) {
-        return new ResponseEntity<>(stationService.getStationsByNameEN(name), HttpStatus.OK
-        );
-    }
-
-    @GetMapping(value = "/totalDistance{ID}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(description = "total travel distance")
-
-    public ResponseEntity<Double> totalDistance(@PathVariable Station station) {
-        return new ResponseEntity<>(stationService.totalJourneyDistance(station), HttpStatus.OK);
+      if(station !=null) {
+          return new ResponseEntity<>(station, HttpStatus.OK);
+      }
+        String errorMessage = "Station name doesn't exists, check spelling";
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessage(errorMessage));
     }
 }
 

@@ -43,8 +43,10 @@ public class JourneyController {
 
     public ResponseEntity<List<Journey>> getJourneyByDepartureStationName(@PathVariable String departureStationName) {
 
-        if (journeyService.getJourneysByDepartureStation(departureStationName).isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        List <Journey> journeys = journeyService.getJourneysByDepartureStation(departureStationName);
+
+        if (journeys.isEmpty()) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
         } else {
             return new ResponseEntity<>(journeyService
                     .getJourneysByDepartureStation(departureStationName), HttpStatus.OK);
@@ -53,7 +55,7 @@ public class JourneyController {
 
     @PostMapping(value = "/journey", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Add a new journey to the database")
-    public ResponseEntity<?> createJourney(@Validated @RequestBody @Valid Journey journey) {
+    public ResponseEntity<Object> createJourney(@Validated @RequestBody @Valid Journey journey) {
         if (journey.getDistance() < 10 || journey.getDuration() < 10) {
             String errorMessage = "Distance needs to be longer than " +
                     "10 metres and duration needs to be more than 10 seconds";
@@ -61,11 +63,11 @@ public class JourneyController {
         }
         Journey createdJourney = journeyService.createJourney(journey);
 
-        if (createdJourney != null) {
-            return new ResponseEntity<>((createdJourney), HttpStatus.CREATED);
-        } else {
+        if (createdJourney == null) {
             String errorMessage = "Journey cannot be saved, station doesn't exist";
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessage(errorMessage));
+        } else {
+            return new ResponseEntity<>((createdJourney), HttpStatus.CREATED);
         }
     }
 }
