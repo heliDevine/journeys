@@ -1,14 +1,14 @@
 package journeys.controller;
 
 public class ErrorMessage {
-    private final String errorMessage;
+    private final String message;
 
     public ErrorMessage(String message) {
-        this.errorMessage = message;
+        this.message = message;
     }
 
-    public String getErrorMessage() {
-        return errorMessage;
+    public String getMessage() {
+        return message;
     }
 
 }

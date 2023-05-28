@@ -68,10 +68,7 @@ public class StationService {
             }
             stationsWithTotalDistance.add(station);
         }
-        Page<Station> processedStations =
-                new PageImpl<>(stationsWithTotalDistance, pageable, stationsPage.getTotalElements());
-
-        return processedStations;
+        return new PageImpl<>(stationsWithTotalDistance, pageable, stationsPage.getTotalElements());
     }
 
 

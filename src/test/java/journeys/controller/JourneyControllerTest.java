@@ -125,7 +125,7 @@ class JourneyControllerTest {
                         .build()
         );
 
-        when(journeyService.getJourneysByDepartureStation(eq(departureStationName)))
+        when(journeyService.getJourneysByDepartureStation(departureStationName))
                 .thenReturn(Collections.singletonList(journeys.get(0)));
         mockMvc.perform(get("/journeys/departureStation/{departureStationName}", departureStationName))
                 .andExpect(status().isOk())
@@ -221,11 +221,9 @@ class JourneyControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(journeyInput)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorMessage").value(errorMessage))
+                .andExpect(jsonPath("$.message").value(errorMessage))
                 .andDo(print());
     }
-
-    @Test
 
     private static String asJsonString(Object obj) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
