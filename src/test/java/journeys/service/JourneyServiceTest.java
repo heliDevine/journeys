@@ -83,8 +83,8 @@ class JourneyServiceTest {
     @Test
     void itSavesNewJourneyWithStationIdsWhenIdsExist() {
 
-        Station departureStation = Station.builder().StationID(1).build();
-        Station returnStation = Station.builder().StationID(2).build();
+        Station departureStation = Station.builder().stationID(1).build();
+        Station returnStation = Station.builder().stationID(2).build();
         when(stationRepository.findByStationNameEN("Firswood")).thenReturn(departureStation);
         when(stationRepository.findByStationNameEN("Market Street")).thenReturn(returnStation);
 

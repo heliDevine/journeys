@@ -133,7 +133,7 @@ class StationServiceTest {
     private Station  createStation() {
         return Station.builder()
                 .id("123")
-                .StationID(1)
+                .stationID(1)
                 .stationNameEN("Kallio")
                 .totalReturnedJourneys(3)
                 .totalDepartingJourneys(2)

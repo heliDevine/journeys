@@ -54,10 +54,10 @@ public class StationService {
         List<Station> stationsWithTotalDistance = new ArrayList<>();
 
         for (Station station : stationsPage.getContent()) {
-            int stationID = station.getStationID();
-            double totalDistance = journeyRepository.calculateTotalJourneyDistanceFromStation(stationID);
-            long countDepartedJourneys = journeyRepository.countByDepartureStationId(stationID);
-            long countReturnedJourneys = journeyRepository.countByReturnStationId(stationID);
+
+            double totalDistance = totalJourneyDistance(station);
+            long countDepartedJourneys = totalJourneyCountDeparted(station);
+            long countReturnedJourneys = totalJourneyCountReturned(station);
 
             if(totalDistance !=0.0) {
                 station.setTotalJourneyDistanceFromStation(totalDistance);

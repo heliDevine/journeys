@@ -24,7 +24,7 @@ public class Station {
     private int FID;
 
     @Field("ID")
-    private int StationID;
+    private int stationID;
 
     @Field("nimi")
     private String stationNameFI;
