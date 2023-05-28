@@ -7,16 +7,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -40,19 +36,27 @@ class StationControllerTest {
         List<Station> stations;
         stations = Arrays.asList(
                 Station.builder()
-                        .id("testId")
-                        .stationNameEN("Test station")
+                        .id("123")
+                        .stationID(1)
+                        .stationNameEN("Firswood")
+                        .totalReturnedJourneys(3)
+                        .totalDepartingJourneys(2)
+                        .totalJourneyDistanceFromStation(500)
                         .build(),
                 Station.builder()
-                        .id("TestId2")
-                        .stationNameEN("Test station 2")
+                        .id("456")
+                        .stationID(1)
+                        .stationNameEN("Chorlton")
+                        .totalReturnedJourneys(3)
+                        .totalDepartingJourneys(2)
+                        .totalJourneyDistanceFromStation(1500)
                         .build()
         );
-        PageRequest pageRequest = PageRequest.of(0, 2);
+        PageRequest pageRequest = PageRequest.of(0, 2, Sort.by("stationNameEN").ascending());
         Page<Station> stationPage = new PageImpl<>(stations, pageRequest, stations.size());
 
-        when(stationService.getAllStations(any(Pageable.class))).thenReturn(stationPage);
-        mockMvc.perform(get("/stations/?page=1&size=2"))
+        when(stationService.getAllStations(Pageable.ofSize((2)))).thenReturn(stationPage);
+        mockMvc.perform(get("/stations/?page=1&size=2&sortBy=stationNameEN"))
                 .andExpect(status().isOk())
                 .andDo(print());
     }

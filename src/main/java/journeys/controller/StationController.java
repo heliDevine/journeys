@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +24,11 @@ public class StationController {
     @Operation(description = "Find all stations from the database")
     public ResponseEntity<Page<Station>> getAllStations(
             @RequestParam(defaultValue = "0", required = false) int pageNo,
-            @RequestParam(defaultValue = "10", required = false) int pageSize) {
-        Pageable pageable = PageRequest.of(pageNo, pageSize);
+            @RequestParam(defaultValue = "10", required = false) int pageSize,
+            @RequestParam (defaultValue = "stationNameEN", required = false)String sortBy) {
+
+        Sort sort = Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Page<Station>stationsWithAddedFields= stationService.processPagedStation(pageable);
 
         return new ResponseEntity<>(stationsWithAddedFields, HttpStatus.OK);
