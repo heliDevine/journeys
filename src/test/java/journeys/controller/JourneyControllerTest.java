@@ -3,6 +3,7 @@ package journeys.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import journeys.model.Journey;
+import journeys.model.JourneyRequestDTO;
 import journeys.service.JourneyService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -20,12 +21,12 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(JourneyController.class)
 class JourneyControllerTest {
@@ -45,8 +46,8 @@ class JourneyControllerTest {
         journeys = Arrays.asList(
                 Journey.builder()
                         .id("1234")
-                        .departureStationName("DepartStation")
-                        .returnStationName("ReturnStation")
+                        .departureStationName("Firswood")
+                        .returnStationName("Chorlton")
                         .distance(1000)
                         .duration(90)
                         .build(),
@@ -61,9 +62,13 @@ class JourneyControllerTest {
         PageRequest pageRequest = PageRequest.of(0, 2);
         Page<Journey> journeysPage = new PageImpl<>(journeys, pageRequest, journeys.size());
 
-        when(journeyService.getAllJourneys(anyInt(), anyInt()))
-                .thenReturn(journeysPage);
+        when(journeyService.getAllJourneys((anyInt()), anyInt())).thenReturn(journeysPage);
         mockMvc.perform(get("/journeys/?page=1&size=2"))
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.content[0].departureStationName" ).value("Firswood"))
+                .andExpect(jsonPath("$.content[0].returnStationName" ).value("Chorlton"))
+                .andExpect(jsonPath("$.content[1].departureStationName").value("Manchester"))
+                .andExpect(jsonPath("$.content[1].returnStationName").value("Helsinki"))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
@@ -120,7 +125,7 @@ class JourneyControllerTest {
                         .build()
         );
 
-        when(journeyService.getJourneysByDepartureStation(any(String.class)))
+        when(journeyService.getJourneysByDepartureStation(eq(departureStationName)))
                 .thenReturn(Collections.singletonList(journeys.get(0)));
         mockMvc.perform(get("/journeys/departureStation/{departureStationName}", departureStationName))
                 .andExpect(status().isOk())
@@ -143,8 +148,7 @@ class JourneyControllerTest {
     @Test
     void itReturns201andCreatesNewJourney() throws Exception {
 
-        Journey journeyInput = Journey.builder()
-                .id("123")
+        JourneyRequestDTO journeyInput = JourneyRequestDTO.builder()
                 .departureStationName("Firswood")
                 .returnStationName("Market Street")
                 .distance(5000)
@@ -169,9 +173,9 @@ class JourneyControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").doesNotExist())
                 .andExpect(jsonPath("$.departureStationName").value("Firswood"))
-                .andExpect(jsonPath("$.departureStationId").doesNotExist())
+                .andExpect(jsonPath("$.departureStationId").value(1))
                 .andExpect(jsonPath("$.returnStationName").value("Market Street"))
-                .andExpect(jsonPath("$.returnStationId").doesNotExist())
+                .andExpect(jsonPath("$.returnStationId").value(2))
                 .andExpect(jsonPath("$.distance").value(5000))
                 .andExpect(jsonPath("$.duration").value(4000))
                 .andDo(print());
@@ -182,8 +186,7 @@ class JourneyControllerTest {
     @Test
     void itReturns400ifDistanceIsUnder10MetresAndSendsErrorMessage() throws Exception {
 
-        Journey journeyInput = Journey.builder()
-                .id("123")
+        JourneyRequestDTO journeyInput = JourneyRequestDTO.builder()
                 .departureStationName("Firswood")
                 .returnStationName("Market Street")
                 .distance(9)
@@ -201,8 +204,8 @@ class JourneyControllerTest {
 
     @Test
     void itReturns400ifDurationIsUnder10SecondsAndSendsErrorMessage() throws Exception {
-        Journey journeyInput = Journey.builder()
-                .id("123")
+
+        JourneyRequestDTO journeyInput = JourneyRequestDTO.builder()
                 .departureStationName("Firswood")
                 .returnStationName("Market Street")
                 .distance(1000)
@@ -211,28 +214,6 @@ class JourneyControllerTest {
 
         String errorMessage = "Distance needs to be longer than " +
                 "10 metres and duration needs to be more than 10 seconds";
-
-        when(journeyService.createJourney(any(Journey.class))).thenReturn(null);
-
-        mockMvc.perform(post("/journeys/journey")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(journeyInput)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorMessage").value(errorMessage))
-                .andDo(print());
-    }
-
-    @Test
-    void itReturns400ifStationDoesntExist() throws Exception {
-
-        Journey journeyInput = Journey.builder()
-                .id("123")
-                .returnStationName("Market Street")
-                .distance(1000)
-                .duration(1000)
-                .build();
-
-        String errorMessage = "Journey cannot be saved, station doesn't exist";
 
         when(journeyService.createJourney(any(Journey.class))).thenReturn(null);
 

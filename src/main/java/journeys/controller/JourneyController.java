@@ -1,15 +1,15 @@
 package journeys.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.validation.Valid;
 import journeys.model.Journey;
+import journeys.model.JourneyRequestDTO;
+import journeys.model.JourneyResponseDTO;
 import journeys.service.JourneyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,7 +41,7 @@ public class JourneyController {
     @GetMapping(value = "/departureStation/{departureStationName}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Find all journeys by the name of departure station")
 
-    public ResponseEntity<List<Journey>> getJourneyByDepartureStationName(@PathVariable String departureStationName) {
+    public ResponseEntity<Object> getJourneyByDepartureStationName(@PathVariable String departureStationName) {
 
         List <Journey> journeys = journeyService.getJourneysByDepartureStation(departureStationName);
 
@@ -55,20 +55,42 @@ public class JourneyController {
 
     @PostMapping(value = "/journey", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Add a new journey to the database")
-    public ResponseEntity<Object> createJourney(@Validated @RequestBody @Valid Journey journey) {
-        if (journey.getDistance() < 10 || journey.getDuration() < 10) {
+    public ResponseEntity<Object> createJourney( @RequestBody JourneyRequestDTO journeyRequestDTO) {
+
+        if (journeyRequestDTO.getDistance() < 10 || journeyRequestDTO.getDuration() < 10) {
             String errorMessage = "Distance needs to be longer than " +
                     "10 metres and duration needs to be more than 10 seconds";
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessage(errorMessage));
         }
+        Journey journey = convertToJourney(journeyRequestDTO);
+
         Journey createdJourney = journeyService.createJourney(journey);
 
-        if (createdJourney == null) {
-            String errorMessage = "Journey cannot be saved, station doesn't exist";
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessage(errorMessage));
-        } else {
-            return new ResponseEntity<>((createdJourney), HttpStatus.CREATED);
-        }
+        JourneyResponseDTO createdJourneyDTO = convertToResponseDTO(createdJourney);
+
+        return new ResponseEntity<>((createdJourneyDTO), HttpStatus.CREATED);
+    }
+
+    private static Journey convertToJourney(JourneyRequestDTO journeyRequestDTO) {
+        return Journey.builder()
+                .departureStationName(journeyRequestDTO.getDepartureStationName())
+                .returnStationName(journeyRequestDTO.getReturnStationName())
+                .distance(journeyRequestDTO.getDistance())
+                .duration(journeyRequestDTO.getDuration())
+                .build();
+    }
+
+    private static JourneyResponseDTO convertToResponseDTO(Journey journey) {
+        return JourneyResponseDTO.builder()
+                .departureTime(journey.getDepartureTime())
+                .returnTime(journey.getReturnTime())
+                .departureStationName(journey.getDepartureStationName())
+                .departureStationId(journey.getDepartureStationId())
+                .returnStationName(journey.getReturnStationName())
+                .returnStationId(journey.getReturnStationId())
+                .distance(journey.getDistance())
+                .duration(journey.getDuration())
+                .build();
     }
 }
 
