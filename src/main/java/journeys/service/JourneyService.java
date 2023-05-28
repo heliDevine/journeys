@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class JourneyService {
@@ -34,21 +36,23 @@ public class JourneyService {
     }
 
     public List<Journey> getJourneysByDepartureStation(String departureStationName) {
-        return journeyRepository.findByDepartureStationName(departureStationName);
+        try {
+            return journeyRepository.findByDepartureStationName(departureStationName);
+        } catch (NoSuchElementException e) {
+            return Collections.emptyList();
+        }
     }
 
     public Journey createJourney(Journey journey) {
+
         Station departureStation = stationRepository.findByStationNameEN(journey.getDepartureStationName());
         Station returnStation = stationRepository.findByStationNameEN(journey.getReturnStationName());
 
-        /// set departure time
         LocalDateTime departureTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String departureTimeString = departureTime.format(formatter);
 
-        ///calculate return time
-
-        int durationInSeconds  =journey.getDuration();
+        int durationInSeconds = journey.getDuration();
         LocalDateTime returnTime = departureTime.plusSeconds(durationInSeconds);
         String returnTimeString = returnTime.format(formatter);
 

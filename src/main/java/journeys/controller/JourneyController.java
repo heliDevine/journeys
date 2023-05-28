@@ -48,8 +48,7 @@ public class JourneyController {
         if (journeys.isEmpty()) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         } else {
-            return new ResponseEntity<>(journeyService
-                    .getJourneysByDepartureStation(departureStationName), HttpStatus.OK);
+            return new ResponseEntity<>(journeys, HttpStatus.OK);
         }
     }
 
