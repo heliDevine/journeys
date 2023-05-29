@@ -24,7 +24,7 @@ public class JourneyController {
 
     @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Find all journeys from the database")
-    public ResponseEntity<Page<Journey>> getAllJourney(
+    public ResponseEntity<Page<Journey>> getAllJourneys(
             @RequestParam(defaultValue = "0", required = false) int pageNo,
             @RequestParam(defaultValue = "10", required = false) int pageSize) {
         return new ResponseEntity<>(journeyService.getAllJourneys(pageNo, pageSize), HttpStatus.OK);
@@ -41,7 +41,7 @@ public class JourneyController {
     @GetMapping(value = "/departureStation/{departureStationName}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Find all journeys by the name of departure station")
 
-    public ResponseEntity<Object> getJourneyByDepartureStationName(@PathVariable String departureStationName) {
+    public ResponseEntity<Object> getJourneysByDepartureStationName(@PathVariable String departureStationName) {
 
         List <Journey> journeys = journeyService.getJourneysByDepartureStation(departureStationName);
 

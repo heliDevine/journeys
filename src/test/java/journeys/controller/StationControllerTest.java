@@ -15,7 +15,6 @@ import java.util.List;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -57,8 +56,7 @@ class StationControllerTest {
 
         when(stationService.getAllStations(Pageable.ofSize((2)))).thenReturn(stationPage);
         mockMvc.perform(get("/stations/?page=1&size=2&sortBy=stationNameEN"))
-                .andExpect(status().isOk())
-                .andDo(print());
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -73,8 +71,7 @@ class StationControllerTest {
         mockMvc.perform(get("/stations/{id}", id)).andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.stationNameEN")
-                        .value(station.getStationNameEN()))
-                .andDo(print());
+                        .value(station.getStationNameEN()));
     }
 
     @Test
@@ -82,8 +79,7 @@ class StationControllerTest {
 
         when(stationService.getStationByID("123")).thenReturn(null);
         mockMvc.perform(get("/stations/123"))
-                .andExpect(status().isNotFound())
-                .andDo(print());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -98,8 +94,7 @@ class StationControllerTest {
         when(stationService.getStationsByNameEN("Old Trafford")).thenReturn(station);
         mockMvc.perform(get("/stations/stationName/{stationName}", stationName)).andExpect(status().isOk())
                 .andExpect(jsonPath("$.stationNameEN")
-                        .value(station.getStationNameEN()))
-                .andDo(print());
+                        .value(station.getStationNameEN()));
     }
 
     @Test
@@ -107,7 +102,6 @@ class StationControllerTest {
 
         when(stationService.getStationsByNameEN("London")).thenReturn(null);
         mockMvc.perform(get("/stations/London"))
-                .andExpect(status().isNotFound())
-                .andDo(print());
+                .andExpect(status().isNotFound());
     }
 }

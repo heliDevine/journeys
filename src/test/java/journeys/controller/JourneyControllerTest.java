@@ -24,7 +24,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -69,8 +68,7 @@ class JourneyControllerTest {
                 .andExpect(jsonPath("$.content[0].returnStationName" ).value("Chorlton"))
                 .andExpect(jsonPath("$.content[1].departureStationName").value("Manchester"))
                 .andExpect(jsonPath("$.content[1].returnStationName").value("Helsinki"))
-                .andExpect(status().isOk())
-                .andDo(print());
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -89,8 +87,7 @@ class JourneyControllerTest {
                 .andExpect(jsonPath("$.departureStationName").value((journey.getDepartureStationName())))
                 .andExpect(jsonPath("$.returnStationName").value((journey.getReturnStationName())))
                 .andExpect(jsonPath("$.distance").value((journey.getDistance())))
-                .andExpect(jsonPath("$.duration").value((journey.getDuration())))
-                .andDo(print());
+                .andExpect(jsonPath("$.duration").value((journey.getDuration())));
     }
 
     @Test
@@ -98,8 +95,7 @@ class JourneyControllerTest {
 
         when(journeyService.getById("123")).thenReturn(null);
         mockMvc.perform(get("/journeys/123"))
-                .andExpect(status().isNotFound())
-                .andDo(print());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -130,8 +126,7 @@ class JourneyControllerTest {
         mockMvc.perform(get("/journeys/departureStation/{departureStationName}", departureStationName))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", Matchers.hasSize(1)))
-                .andExpect(jsonPath("$.[0].returnStationName").value("Market Street"))
-                .andDo(print());
+                .andExpect(jsonPath("$.[0].returnStationName").value("Market Street"));
     }
 
     @Test
@@ -141,8 +136,7 @@ class JourneyControllerTest {
 
         when(journeyService.getJourneysByDepartureStation("London")).thenReturn(Collections.emptyList());
         mockMvc.perform(get("/journeys/{departureStationName}", departureStationName))
-                .andExpect(status().isNotFound())
-                .andDo(print());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -177,8 +171,7 @@ class JourneyControllerTest {
                 .andExpect(jsonPath("$.returnStationName").value("Market Street"))
                 .andExpect(jsonPath("$.returnStationId").value(2))
                 .andExpect(jsonPath("$.distance").value(5000))
-                .andExpect(jsonPath("$.duration").value(4000))
-                .andDo(print());
+                .andExpect(jsonPath("$.duration").value(4000));
 
         verify(journeyService, times(1)).createJourney(any(Journey.class));
     }
@@ -198,8 +191,7 @@ class JourneyControllerTest {
         mockMvc.perform(post("/journeys/journey")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(journeyInput)))
-                .andExpect(status().isBadRequest())
-                .andDo(print());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -221,8 +213,7 @@ class JourneyControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(journeyInput)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(errorMessage))
-                .andDo(print());
+                .andExpect(jsonPath("$.message").value(errorMessage));
     }
 
     private static String asJsonString(Object obj) throws JsonProcessingException {
