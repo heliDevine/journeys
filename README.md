@@ -82,7 +82,7 @@ This is Java Springboot application built with Maven, so it needs following to b
 - From command line `mvn spring-boot:run` to run the application. This will run Springboot logs and takes a few moments. Head to your default browser
 http://localhost:8080/swagger-ui/index.html and you should see this Swagger UI 
 
-- ![Swagger page](images/Screenshot 2023-05-29 at 10.50.56.png "Swagger image")
+- ![Image alt text](images/Screenshot 2023-05-29 at 10.50.56.png?raw=true "Swagger image")
 
 ## Use the application
 
