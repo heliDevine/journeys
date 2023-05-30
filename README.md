@@ -31,7 +31,7 @@ I used following jsonSchema for the validation to exclude short journeys and exc
 
 `{ $jsonSchema: { properties: { distance: { minimum: 10 }, duration: { minimum: 10 } } } }`'
 
-yeStations and journeys use separate collections from same database.
+Stations and journeys use separate collections from same database.
 
 ### System design
 
@@ -40,15 +40,15 @@ service layer business logic and controllers the REST requests.
 
 #### Repositories 
 
-I excluded unnecessary fields on database query which made it clearer for dedicated endpoints to provide relevant data and reduced bulk of
-data which was sent to the frontend. To calculate total journey distance from a given station I used aggregation pipeline which worked well and reduced code on service layer.
+I excluded unnecessary fields on database query which made it clearer for the dedicated endpoints to provide relevant data and reduced bulk of
+data which was sent to the frontend. To calculate total journey distance from a given station I used aggregation pipeline which worked well and reduced code on the service layer.
 
 #### Services
 
 The service layer contains logic of processing journeys and stations. Most methods are straightforward calls to repository, 
 processStation and createJourney methods have more complexity. CreateJourney method adds remaining fields 
 to the journey. Reasoning behind this decision was to reduce the input fields which user would need know about their journey. 
-StationID's can be pulled from the database and "in real world" timestamps would be generated when bike leaves or returned to the station.
+StationID's can be pulled from the database and "in real world" timestamps would be generated when bike leaves or returns to the station.
 Therefore, I decided to add these programmatically by using LocalDateTime and calculate return time. 
 This generated complete journey will be saved to the database. ProcessStation method adds
 total distance of departed journeys and total counts of journeys departing from and to the station.
@@ -56,14 +56,14 @@ total distance of departed journeys and total counts of journeys departing from 
 #### Controllers
 
 At the moment the linked frontend client uses 2 endpoints GET/journeys and GET/stations. GetAllJourneys method fetches 
-all journeys from database, the results are paginated with optional page sizes. GetAllStations method fetches all stations with 
+all journeys and the results are paginated with optional page sizes. GetAllStations method fetches all stations with 
 added fields, results are paginated and sorted alphabetically. 
 
 I added POST journey endpoint with a request body for departure and return stations, duration and distance. 
 I used  DTOs for Journey to decouple the database entity from the HTTP request body and the response. 
 
-The other endpoints are shown on the below table and mainly used during the development and testing but can be 
-used via Swagger endpoints and would be useful for future features.
+The other endpoints are shown on the below table and were mainly used during the development and testing but can be 
+used via Swagger UI and would be useful for future features.
 
 | HTTP | endpoint                                          | method                            | params               |
 |------|---------------------------------------------------|-----------------------------------|----------------------|
