@@ -11,6 +11,7 @@ abstraction when/if frontend client's needs grow and change.
 
 ### Stack and tools
 - Java 17
+- Maven 
 - Springboot 3
 - Testing : JUnit & Mockito
 - Libraries: Lombok to reduce boilerplate and Jackson to serialize/deserialize.
@@ -85,13 +86,13 @@ used via Swagger UI and would be useful for future features.
   "mongo.password=PASSWORD_PLACEHOLDER" change placeholder values after "=" sign to real values. The best way to do this is in IDE (See images folder for reference)
 
 ### Docker container
-- You will need [Docker](https://docs.docker.com/get-docker/) installed machine. Check if you already have it by running
-`docker --version` command on CLI. If not, download it from the Docker site.
+- You will need [Docker](https://docs.docker.com/get-docker/) installed to your computer. Check if you already have it by running
+`docker --version` command on CLI. If not, download it from the Docker site and consider using Docker Desktop as it's convenient to manage images and containers.
 - build the image from docker file with command `docker build -t journeys-app .` 
 - run the container with command `docker run -d -p 8080:8080 journeys-app` -d flag will run the container in de-attached mode, so it won't block the terminal window whilst application is running. 
 - The application takes a few moments to start but head to your default browser and to this url: http://localhost:8080/swagger-ui/index.html and you should see Swagger UI. (see images folder for reference)
 
-### On your own machine
+### On your own computer
 
 If you go for this option I assume you have development environment set up already, such as Homebrew for Mac.
 This is Java Springboot application built with Maven, so it needs following to be installed 
